@@ -50,6 +50,15 @@ docker-compose up -d
 
 ---
 
+### 🔗 Endpoints disponíveis
+
+- API base: http://localhost:8000
+- Teste banco: http://localhost:8000/db-test
+- Documentação Swagger: http://localhost:8000/docs
+- pgAdmin: http://localhost:5050
+
+---
+
 ## 👨‍💻 Autor
 
 **Ian da Costa Gama**  
