@@ -6,7 +6,7 @@ counter = 1
 
 def create_product(data: ProductCreate) -> ProductInDB:
     global counter
-    product = ProductInDB(id=counter, **data.dict())
+    product = ProductInDB(id=counter, **data.model_dump())
     fake_db[counter] = product
     counter += 1
     return product
@@ -19,7 +19,7 @@ def list_products() -> list[ProductInDB]:
 
 def update_product(product_id: int, data: ProductUpdate) -> ProductInDB:
     existing = fake_db[product_id]
-    updated = existing.copy(update=data.dict(exclude_unset=True))
+    updated = existing.copy(update=data.model_dump(exclude_unset=True))
     fake_db[product_id] = updated
     return updated
 
