@@ -1,0 +1,17 @@
+# Ignorar ambiente virtual
+venv/
+
+# Ignorar cache do Python
+__pycache__/
+*.pyc
+
+# Ignorar arquivos de configuração pessoais
+.env
+
+# Ignorar arquivos temporários de sistema
+.DS_Store
+*.log
+
+# Ignorar pastas que não são usadas na imagem final
+docs/
+tests/
