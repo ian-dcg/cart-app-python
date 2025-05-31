@@ -8,53 +8,47 @@ Aplicativo de gerenciamento de listas de compras, originalmente desenvolvido em 
 
 ---
 
-## 🧪 Como rodar o projeto
+## 🚀 Como rodar o projeto (via Docker Compose)
 
-### 1. Instalar dependências Python
+### ✅ Pré-requisitos
+
+- Docker e Docker Compose instalados
+- Git Bash (ou terminal compatível)
+
+---
+
+### 📦 Passos para execução
 
 ```bash
-python -m venv venv
-source venv/Scripts/activate      # Git Bash
-pip install -r requirements.txt
-```
+# 1. Clone o repositório
+git clone https://github.com/ian-dcg/cart-app-python.git
+cd cart-app-python
 
-### 2. Subir banco de dados e pgAdmin
+# 2. Copie o arquivo de variáveis de ambiente
+cp .env.example .env
 
-```bash
+# 3. Suba os serviços: banco, pgAdmin e backend
 cd docker
-docker-compose up -d
+docker-compose up -d --build
 ```
-
-### 3. Iniciar backend
-
-```bash
-./start.sh
-```
-
----
-
-## 📦 Dependências
-
-- Python 3.13+
-- FastAPI
-- Uvicorn
-- PostgreSQL + pgAdmin (via Docker)
-
----
-
-## 🔗 Links úteis
-
-- 🔹 [📄 Histórias de Usuário (Backlog)](./docs/backlog/historias_de_usuario.md)
-- 🔹 [📊 Diagrama de Classes UML (PNG)](./docs/uml/diagrama_UML.png)
 
 ---
 
 ### 🔗 Endpoints disponíveis
 
 - API base: http://localhost:8000
-- Teste banco: http://localhost:8000/db-test
+- Teste de conexão com banco: http://localhost:8000/db-test
 - Documentação Swagger: http://localhost:8000/docs
 - pgAdmin: http://localhost:5050
+
+---
+
+## 📦 Dependências
+
+- Python 3.13+ (para desenvolvimento local)
+- FastAPI
+- Uvicorn
+- PostgreSQL + pgAdmin (via Docker)
 
 ---
 
@@ -81,6 +75,13 @@ DB_PASSWORD=admin
 Essas variáveis são usadas pelo backend FastAPI para se conectar ao banco de dados PostgreSQL dentro do Docker.
 
 ⚠️ O `.env` está listado no `.gitignore` e **não deve ser versionado**.
+
+---
+
+## 🔗 Links úteis
+
+- 🔹 [📄 Histórias de Usuário (Backlog)](./docs/backlog/historias_de_usuario.md)
+- 🔹 [📊 Diagrama de Classes UML (PNG)](./docs/uml/diagrama_UML.png)
 
 ---
 
