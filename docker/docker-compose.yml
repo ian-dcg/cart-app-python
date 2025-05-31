@@ -44,6 +44,7 @@ services:
       - DB_NAME=cartdb
       - DB_USER=admin
       - DB_PASSWORD=admin
+      - PYTHONPATH=/app
 
 volumes:
   pgdata:
