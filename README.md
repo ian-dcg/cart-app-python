@@ -52,6 +52,14 @@ docker-compose up -d --build
 
 ---
 
+## 🧪 Rodando os testes
+
+Para rodar os testes via Docker:
+
+```bash
+docker-compose run --rm api pytest
+```
+
 ## 🛠️ Variáveis de ambiente (.env)
 
 Este projeto utiliza um arquivo `.env` para configurar a conexão com o banco de dados.
