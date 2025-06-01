@@ -3,4 +3,5 @@ uvicorn[standard]
 python-dotenv
 asyncpg
 pytest
+pytest-asyncio
 httpx

@@ -1,18 +1,20 @@
-import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
 
-def test_create_product():
-    response = client.post("/products/", json={"name": "Café", "price": 12.5, "quantity": 2})
+def test_create_and_list_products():
+    response = client.post("/products/", json={
+        "name": "Arroz",
+        "price": 20.0,
+        "quantity": 5
+    })
     assert response.status_code == 201
     data = response.json()
-    assert data["name"] == "Café"
-    assert data["price"] == 12.5
-    assert data["quantity"] == 2
+    assert data["name"] == "Arroz"
+    assert data["price"] == 20.0
+    assert data["quantity"] == 5
 
-def test_get_all_products():
     response = client.get("/products/")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
