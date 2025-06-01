@@ -1,6 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from app.models.cart_model import CartCreate, CartItemCreate, CartOut, CartItemOut
-from app.services.cart_repository import create_cart, add_item_to_cart, get_cart, list_all_carts
+from app.services.cart_repository import (
+    create_cart,
+    add_item_to_cart,
+    get_cart,
+    list_all_carts,
+    delete_cart
+)
 
 router = APIRouter(prefix="/cart", tags=["Carrinho"])
 
@@ -25,3 +31,9 @@ async def get_cart_info(cart_id: int):
 @router.get("/", response_model=list[CartOut])
 async def get_all_carts():
     return await list_all_carts()
+
+@router.delete("/{cart_id}", status_code=204)
+async def delete_cart_route(cart_id: int):
+    deleted = await delete_cart(cart_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Carrinho não encontrado")

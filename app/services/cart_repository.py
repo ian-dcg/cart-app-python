@@ -1,3 +1,4 @@
+
 import asyncpg
 from app.settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 from app.models.cart_model import CartItemCreate, CartItemOut, CartOut
@@ -49,3 +50,9 @@ async def list_all_carts() -> list[CartOut]:
         all_carts.append(CartOut(id=cart_id, items=items))
     await conn.close()
     return all_carts
+
+async def delete_cart(cart_id: int) -> bool:
+    conn = await get_connection()
+    result = await conn.execute("DELETE FROM carrinhos WHERE id = $1", cart_id)
+    await conn.close()
+    return result.startswith("DELETE 1")
