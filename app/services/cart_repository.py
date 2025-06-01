@@ -37,3 +37,15 @@ async def get_cart(carrinho_id: int) -> CartOut:
     await conn.close()
     items = [CartItemOut(**r) for r in rows]
     return CartOut(id=carrinho_id, items=items)
+
+async def list_all_carts() -> list[CartOut]:
+    conn = await get_connection()
+    cart_rows = await conn.fetch("SELECT id FROM carrinhos")
+    all_carts = []
+    for row in cart_rows:
+        cart_id = row["id"]
+        item_rows = await conn.fetch("SELECT id, produto_id, quantidade FROM itens_carrinho WHERE carrinho_id = $1", cart_id)
+        items = [CartItemOut(**item) for item in item_rows]
+        all_carts.append(CartOut(id=cart_id, items=items))
+    await conn.close()
+    return all_carts

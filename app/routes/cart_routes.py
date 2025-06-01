@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.models.cart_model import CartCreate, CartItemCreate, CartOut, CartItemOut
-from app.services.cart_repository import create_cart, add_item_to_cart, get_cart
+from app.services.cart_repository import create_cart, add_item_to_cart, get_cart, list_all_carts
 
 router = APIRouter(prefix="/cart", tags=["Carrinho"])
 
@@ -21,3 +21,7 @@ async def get_cart_info(cart_id: int):
         return await get_cart(cart_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Carrinho não encontrado")
+
+@router.get("/", response_model=list[CartOut])
+async def get_all_carts():
+    return await list_all_carts()
