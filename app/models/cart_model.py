@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class CartCreate(BaseModel):
@@ -6,7 +6,7 @@ class CartCreate(BaseModel):
 
 class CartItemCreate(BaseModel):
     produto_id: int
-    quantidade: int
+    quantidade: int = Field(..., gt=0, description="Quantidade deve ser maior que 0")
 
 class CartItemOut(BaseModel):
     id: int
