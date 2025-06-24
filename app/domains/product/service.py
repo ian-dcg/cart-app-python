@@ -32,17 +32,24 @@ async def get_product(product_id: int) -> ProductInDB:
         return ProductInDB(**row)
     raise KeyError("Produto não encontrado")
 
-async def list_products(setor: Optional[str] = None) -> List[ProductInDB]:
+async def list_products(setor: Optional[str] = None, nome: Optional[str] = None) -> List[ProductInDB]:
     conn = await get_connection()
+    query = "SELECT id, name, price, quantity, setor FROM produtos"
+    conditions = []
+    values = []
 
     if setor:
-        rows = await conn.fetch(
-            "SELECT id, name, price, quantity, setor FROM produtos WHERE setor = $1",
-            setor
-        )
-    else:
-        rows = await conn.fetch("SELECT id, name, price, quantity, setor FROM produtos")
+        conditions.append("setor = $" + str(len(values) + 1))
+        values.append(setor)
 
+    if nome:
+        conditions.append("name ILIKE $" + str(len(values) + 1))
+        values.append(f"%{nome}%")
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
+    rows = await conn.fetch(query, *values)
     await conn.close()
     return [ProductInDB(**row) for row in rows]
 
