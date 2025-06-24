@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException
 from app.domains.cart.model import CartCreate, CartItemCreate, CartOut, CartItemOut
 from app.domains.cart.service import (
@@ -37,3 +38,11 @@ async def delete_cart_route(cart_id: int):
     deleted = await delete_cart(cart_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Carrinho não encontrado")
+
+@router.get("/{cart_id}/total")
+async def get_cart_total(cart_id: int):
+    try:
+        from app.domains.cart.service import calcular_total_carrinho
+        return await calcular_total_carrinho(cart_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Erro ao calcular total do carrinho")

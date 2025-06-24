@@ -1,4 +1,3 @@
-
 import asyncpg
 from app.settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 from app.domains.cart.model import CartItemCreate, CartItemOut, CartOut
@@ -56,3 +55,17 @@ async def delete_cart(cart_id: int) -> bool:
     result = await conn.execute("DELETE FROM carrinhos WHERE id = $1", cart_id)
     await conn.close()
     return result.startswith("DELETE 1")
+
+
+async def calcular_total_carrinho(cart_id: int) -> dict:
+    conn = await get_connection()
+    query = """
+        SELECT SUM(p.price * i.quantidade) AS total
+        FROM itens_carrinho i
+        JOIN produtos p ON p.id = i.produto_id
+        WHERE i.carrinho_id = $1
+    """
+    row = await conn.fetchrow(query, cart_id)
+    await conn.close()
+    total = float(row["total"]) if row["total"] is not None else 0.0
+    return {"carrinho_id": cart_id, "total": round(total, 2)}
