@@ -5,3 +5,7 @@ asyncpg
 pytest
 pytest-asyncio
 httpx
+python-jose
+passlib[bcrypt]
+pydantic[email]
+python-multipart
