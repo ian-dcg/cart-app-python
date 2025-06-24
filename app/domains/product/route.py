@@ -11,12 +11,12 @@ from app.domains.product.service import (
 
 router = APIRouter(prefix="/products", tags=["Produtos"])
 
-
 @router.get("/", response_model=list[ProductInDB])
-async def get_all(setor: Optional[str] = Query(default=None)):
-    return await list_products(setor)
-
-    return await list_products()
+async def get_all(
+    setor: Optional[str] = Query(default=None),
+    nome: Optional[str] = Query(default=None)
+):
+    return await list_products(setor=setor, nome=nome)
 
 @router.get("/{product_id}", response_model=ProductInDB)
 async def get_by_id(product_id: int):
