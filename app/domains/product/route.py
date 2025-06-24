@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.models.product_model import ProductInDB, ProductCreate, ProductUpdate
-from app.services.product_repository import (
+from app.domains.product.model import ProductInDB, ProductCreate, ProductUpdate
+from app.domains.product.service import (
     create_product,
     get_product,
     list_products,

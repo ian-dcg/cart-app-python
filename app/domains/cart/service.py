@@ -1,7 +1,7 @@
 
 import asyncpg
 from app.settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
-from app.models.cart_model import CartItemCreate, CartItemOut, CartOut
+from app.domains.cart.model import CartItemCreate, CartItemOut, CartOut
 
 async def get_connection():
     return await asyncpg.connect(

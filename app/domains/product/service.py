@@ -1,6 +1,6 @@
 import asyncpg
-from app.models.product_model import ProductInDB, ProductCreate, ProductUpdate
 from app.settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+from app.domains.product.model import ProductInDB, ProductCreate, ProductUpdate
 
 async def get_connection():
     return await asyncpg.connect(

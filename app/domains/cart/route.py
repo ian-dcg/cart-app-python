@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.models.cart_model import CartCreate, CartItemCreate, CartOut, CartItemOut
-from app.services.cart_repository import (
+from app.domains.cart.model import CartCreate, CartItemCreate, CartOut, CartItemOut
+from app.domains.cart.service import (
     create_cart,
     add_item_to_cart,
     get_cart,
