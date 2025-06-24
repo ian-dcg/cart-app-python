@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional
 from app.domains.product.model import ProductInDB, ProductCreate, ProductUpdate
 from app.domains.product.service import (
     create_product,
@@ -10,8 +11,11 @@ from app.domains.product.service import (
 
 router = APIRouter(prefix="/products", tags=["Produtos"])
 
+
 @router.get("/", response_model=list[ProductInDB])
-async def get_all():
+async def get_all(setor: Optional[str] = Query(default=None)):
+    return await list_products(setor)
+
     return await list_products()
 
 @router.get("/{product_id}", response_model=ProductInDB)
