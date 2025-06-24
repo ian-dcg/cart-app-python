@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 import asyncpg
 import app.settings as settings
-from app.routes.product_routes import router as product_router
-from app.routes.cart_routes import router as cart_router
+from app.domains.product.route import router as product_router
+from app.domains.cart.route import router as cart_router
 
 app = FastAPI()
 
