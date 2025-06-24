@@ -3,6 +3,7 @@ import asyncpg
 import app.settings as settings
 from app.domains.product.route import router as product_router
 from app.domains.cart.route import router as cart_router
+from app.domains.auth.route import router as auth_router
 
 app = FastAPI()
 
@@ -27,3 +28,4 @@ async def test_db():
 # Registro de novas rotas de produto
 app.include_router(product_router)
 app.include_router(cart_router)
+app.include_router(auth_router)
