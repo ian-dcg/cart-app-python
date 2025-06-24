@@ -32,6 +32,12 @@
 **Quero** me autenticar com email e senha,  
 **Para** acessar minhas listas e carrinhos de forma segura.
 
+### História 11: Deletar item da lista
+
+**Como** usuário,  
+**Quero** remover um item da minha lista de compras,  
+**Para** que ele desapareça completamente caso tenha sido adicionado por engano ou não faça mais sentido.
+
 ---
 
 ## Persona: Sistema / Admin
