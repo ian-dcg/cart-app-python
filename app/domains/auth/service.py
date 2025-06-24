@@ -2,9 +2,9 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from app.core.security import SECRET_KEY, ALGORITHM
+from app.domains.auth.repository import fake_users_db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-fake_users_db = {}
 
 def register_user(email: str, password: str):
     if email in fake_users_db:
