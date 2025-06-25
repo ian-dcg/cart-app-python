@@ -9,3 +9,6 @@ python-jose
 passlib[bcrypt]
 pydantic[email]
 python-multipart
+flake8
+black
+isort

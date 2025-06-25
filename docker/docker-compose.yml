@@ -47,5 +47,13 @@ services:
       - DB_PASSWORD=admin
       - PYTHONPATH=/app
 
+  lint:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: bash docker/scripts/lint.sh
+    volumes:
+      - ../:/app
+
 volumes:
   pgdata:
