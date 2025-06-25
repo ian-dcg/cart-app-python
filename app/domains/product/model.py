@@ -1,5 +1,7 @@
 from typing import Optional
+
 from pydantic import BaseModel
+
 
 class ProductInDB(BaseModel):
     id: int
@@ -8,11 +10,13 @@ class ProductInDB(BaseModel):
     quantity: int
     setor: str
 
+
 class ProductCreate(BaseModel):
     name: str
     price: float
     quantity: int
     setor: str
+
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None

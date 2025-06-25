@@ -1,38 +1,45 @@
+from typing import List, Optional
+
 import asyncpg
-from typing import Optional, List
-from app.settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
-from app.domains.product.model import ProductInDB, ProductCreate, ProductUpdate
+
+from app.domains.product.model import ProductCreate, ProductInDB, ProductUpdate
+from app.settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+
 
 async def get_connection():
     return await asyncpg.connect(
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
-        host=DB_HOST,
-        port=DB_PORT
+        user=DB_USER, password=DB_PASSWORD, database=DB_NAME, host=DB_HOST, port=DB_PORT
     )
+
 
 async def create_product(data: ProductCreate) -> ProductInDB:
     conn = await get_connection()
     row = await conn.fetchrow(
         "INSERT INTO produtos (name, price, quantity, setor) VALUES ($1, $2, $3, $4) RETURNING id, name, price, quantity, setor",
-        data.name, data.price, data.quantity, data.setor
+        data.name,
+        data.price,
+        data.quantity,
+        data.setor,
     )
     await conn.close()
     return ProductInDB(**row)
+
 
 async def get_product(product_id: int) -> ProductInDB:
     conn = await get_connection()
     row = await conn.fetchrow(
         "SELECT id, name, price, quantity, setor FROM produtos WHERE id = $1",
-        product_id
+        product_id,
     )
     await conn.close()
     if row:
         return ProductInDB(**row)
     raise KeyError("Produto não encontrado")
 
-async def list_products(setor: Optional[str] = None, nome: Optional[str] = None) -> List[ProductInDB]:
+
+async def list_products(
+    setor: Optional[str] = None, nome: Optional[str] = None
+) -> List[ProductInDB]:
     conn = await get_connection()
     query = "SELECT id, name, price, quantity, setor FROM produtos"
     conditions = []
@@ -53,6 +60,7 @@ async def list_products(setor: Optional[str] = None, nome: Optional[str] = None)
     await conn.close()
     return [ProductInDB(**row) for row in rows]
 
+
 async def update_product(product_id: int, data: ProductUpdate) -> ProductInDB:
     conn = await get_connection()
     existing = await conn.fetchrow("SELECT * FROM produtos WHERE id = $1", product_id)
@@ -70,12 +78,15 @@ async def update_product(product_id: int, data: ProductUpdate) -> ProductInDB:
     values.append(product_id)
 
     await conn.execute(
-        f"UPDATE produtos SET {', '.join(update_fields)} WHERE id = ${index}",
-        *values
+        f"UPDATE produtos SET {', '.join(update_fields)} WHERE id = ${index}", *values
     )
-    updated = await conn.fetchrow("SELECT id, name, price, quantity, setor FROM produtos WHERE id = $1", product_id)
+    updated = await conn.fetchrow(
+        "SELECT id, name, price, quantity, setor FROM produtos WHERE id = $1",
+        product_id,
+    )
     await conn.close()
     return ProductInDB(**updated)
+
 
 async def delete_product(product_id: int) -> None:
     conn = await get_connection()

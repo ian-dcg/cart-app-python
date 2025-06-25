@@ -1,21 +1,19 @@
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 client = TestClient(app)
 
+
 def test_criar_produto_com_setor_e_filtrar_por_setor():
-    client.post("/products/", json={
-        "name": "Leite",
-        "price": 4.50,
-        "quantity": 20,
-        "setor": "Bebidas"
-    })
-    client.post("/products/", json={
-        "name": "Baguete",
-        "price": 3.00,
-        "quantity": 15,
-        "setor": "Padaria"
-    })
+    client.post(
+        "/products/",
+        json={"name": "Leite", "price": 4.50, "quantity": 20, "setor": "Bebidas"},
+    )
+    client.post(
+        "/products/",
+        json={"name": "Baguete", "price": 3.00, "quantity": 15, "setor": "Padaria"},
+    )
 
     # Filtro por setor
     resp = client.get("/products?setor=Bebidas")
@@ -23,19 +21,21 @@ def test_criar_produto_com_setor_e_filtrar_por_setor():
     data = resp.json()
     assert all(prod["setor"] == "Bebidas" for prod in data)
 
+
 def test_filtrar_por_nome_e_combinado_com_setor():
-    client.post("/products/", json={
-        "name": "Sabão em Pó",
-        "price": 8.99,
-        "quantity": 5,
-        "setor": "Limpeza"
-    })
-    client.post("/products/", json={
-        "name": "Sabonete Líquido",
-        "price": 6.50,
-        "quantity": 8,
-        "setor": "Limpeza"
-    })
+    client.post(
+        "/products/",
+        json={"name": "Sabão em Pó", "price": 8.99, "quantity": 5, "setor": "Limpeza"},
+    )
+    client.post(
+        "/products/",
+        json={
+            "name": "Sabonete Líquido",
+            "price": 6.50,
+            "quantity": 8,
+            "setor": "Limpeza",
+        },
+    )
 
     # Filtro parcial por nome
     resp_nome = client.get("/products?nome=sab")
