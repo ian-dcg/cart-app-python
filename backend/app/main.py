@@ -1,35 +1,33 @@
-import asyncpg
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-import app.settings as settings
 from app.domains.auth.route import router as auth_router
 from app.domains.cart.route import router as cart_router
 from app.domains.product.route import router as product_router
 
 app = FastAPI()
 
+# Lista de origens permitidas
+origins = [
+    "http://localhost:3000",  # frontend Next.js
+    "http://localhost:8080",
+    "http://localhost",
+]
 
-# Rotas básicas
+# Adiciona o middleware de CORS ao aplicativo
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Permite as origens da lista
+    allow_credentials=True,  # Permite cookies/autenticação
+    allow_methods=["*"],  # Permite todos os métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos os cabeçalhos
+)
+
 @app.get("/")
 def hello_world():
     return {"message": "Hello World!"}
 
 
-@app.get("/db-test")
-async def test_db():
-    conn = await asyncpg.connect(
-        user=settings.DB_USER,
-        password=settings.DB_PASSWORD,
-        database=settings.DB_NAME,
-        host=settings.DB_HOST,
-        port=settings.DB_PORT,
-    )
-    await conn.execute("CREATE TABLE IF NOT EXISTS ping (id SERIAL PRIMARY KEY)")
-    await conn.close()
-    return {"status": "ok"}
-
-
-# Registro de novas rotas de produto
 app.include_router(product_router)
 app.include_router(cart_router)
 app.include_router(auth_router)
