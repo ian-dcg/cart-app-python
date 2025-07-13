@@ -10,7 +10,8 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: cartdb
     volumes:
-      - ./scripts:/docker-entrypoint-initdb.d
+      # Aponta para a pasta de scripts dentro do backend
+      - ./backend/scripts:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -29,12 +30,14 @@ services:
 
   api:
     build:
-      context: ..
+      # O contexto do build agora é a pasta backend
+      context: ./backend
       dockerfile: Dockerfile
     container_name: cartapp_backend
     restart: always
     volumes:
-      - ../:/app
+      # Mapeia a pasta backend local para a pasta /app no container
+      - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -49,11 +52,13 @@ services:
 
   lint:
     build:
-      context: ..
+      # O contexto do build também é a pasta backend
+      context: ./backend
       dockerfile: Dockerfile
-    command: bash docker/scripts/lint.sh
+    # O comando agora roda a partir da pasta /app (que é a ./backend)
+    command: bash scripts/lint.sh
     volumes:
-      - ../:/app
+      - ./backend:/app
 
 volumes:
   pgdata:
