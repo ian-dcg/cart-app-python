@@ -4,19 +4,20 @@
 import { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "@/lib/api";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 
 interface Product {
   id: number;
   name: string;
   quantity: number;
   setor: string;
+  price: number;
 }
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -60,8 +61,9 @@ export default function ProductsPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-5 gap-4 px-4 text-left text-sm font-medium text-gray-500">
+        <div className="grid grid-cols-6 gap-4 px-4 text-left text-sm font-medium text-gray-500">
           <div className="col-span-2">Name</div>
+          <div>Price</div>
           <div>Quantity</div>
           <div>Sector</div>
           <div>Actions</div>
@@ -73,14 +75,21 @@ export default function ProductsPage() {
           products.map((product) => (
             <div
               key={product.id}
-              className="grid grid-cols-5 gap-4 items-center bg-gray-50 p-4 rounded-lg"
+              className="grid grid-cols-6 gap-4 items-center bg-gray-50 p-4 rounded-lg"
             >
               <div className="col-span-2 font-medium text-gray-800">
                 {product.name}
               </div>
+              <div className="text-gray-600">${product.price.toFixed(2)}</div>
               <div className="text-gray-600">{product.quantity}</div>
               <div className="text-gray-600">{product.setor}</div>
-              <div className="space-x-4">
+              <div className="space-x-2">
+                <button
+                  onClick={() => addToCart(product.id, 1)}
+                  className="text-green-600 hover:underline"
+                >
+                  Add to Cart
+                </button>
                 <Link
                   href={`/products/edit/${product.id}`}
                   className="text-blue-600 hover:underline"
@@ -97,12 +106,6 @@ export default function ProductsPage() {
             </div>
           ))
         )}
-      </div>
-
-      <div className="flex justify-end mt-8">
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-          Continue
-        </button>
       </div>
     </div>
   );
