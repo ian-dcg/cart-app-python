@@ -5,6 +5,7 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const url = `${apiUrl}${endpoint}`; // O endpoint já deve conter a barra inicial, ex: '/products'
 
+  // **CORREÇÃO:** Verifica se o código está rodando no navegador antes de acessar o localStorage
   let token: string | null = null;
   if (typeof window !== "undefined") {
     token = localStorage.getItem("authToken");
@@ -45,8 +46,28 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 // Funções específicas para cada endpoint
 export const getProducts = () => apiFetch("/products/");
 
+export const createProduct = (data: any) =>
+  apiFetch("/products/", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+export const getProductById = (id: number) => apiFetch(`/products/${id}`);
+
+export const updateProduct = (id: number, data: any) =>
+  apiFetch(`/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
+export const deleteProduct = (id: number) =>
+  apiFetch(`/products/${id}`, {
+    method: "DELETE",
+  });
+
 export const loginUser = (data: URLSearchParams) =>
   apiFetch("/auth/login", {
+    // Rota corrigida de /token para /login
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -56,9 +77,10 @@ export const loginUser = (data: URLSearchParams) =>
 
 export const registerUser = (data: any) =>
   apiFetch("/auth/register", {
+    // Rota corrigida de /users para /register
     method: "POST",
     body: JSON.stringify(data),
   });
 
 export const getCart = () => apiFetch("/cart/");
-// ... adicionar outras funções conforme necessário (addToCart, removeFromCart, etc.)
+// ... adicione outras funções conforme necessário (addToCart, removeFromCart, etc.)
