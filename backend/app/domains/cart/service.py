@@ -29,6 +29,17 @@ async def add_item_to_cart(carrinho_id: int, item: CartItemCreate) -> CartItemOu
     return CartItemOut(**row)
 
 
+async def remove_item_from_cart(carrinho_id: int, item_id: int) -> bool:
+    conn = await get_connection()
+    result = await conn.execute(
+        "DELETE FROM itens_carrinho WHERE id = $1 AND carrinho_id = $2",
+        item_id,
+        carrinho_id,
+    )
+    await conn.close()
+    return result.startswith("DELETE 1")
+
+
 async def get_cart(carrinho_id: int) -> CartOut:
     conn = await get_connection()
     cart = await conn.fetchrow("SELECT id FROM carrinhos WHERE id = $1", carrinho_id)
