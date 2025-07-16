@@ -43,44 +43,38 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
   return response.json();
 }
 
-// Funções específicas para cada endpoint
+// Funções de Produtos
 export const getProducts = () => apiFetch("/products/");
-
 export const createProduct = (data: any) =>
-  apiFetch("/products/", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
+  apiFetch("/products/", { method: "POST", body: JSON.stringify(data) });
 export const getProductById = (id: number) => apiFetch(`/products/${id}`);
-
 export const updateProduct = (id: number, data: any) =>
-  apiFetch(`/products/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-  });
-
+  apiFetch(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) });
 export const deleteProduct = (id: number) =>
-  apiFetch(`/products/${id}`, {
-    method: "DELETE",
-  });
+  apiFetch(`/products/${id}`, { method: "DELETE" });
 
+// Funções de Autenticação
 export const loginUser = (data: URLSearchParams) =>
   apiFetch("/auth/login", {
-    // Rota corrigida de /token para /login
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: data,
   });
-
 export const registerUser = (data: any) =>
-  apiFetch("/auth/register", {
-    // Rota corrigida de /users para /register
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+  apiFetch("/auth/register", { method: "POST", body: JSON.stringify(data) });
 
-export const getCart = () => apiFetch("/cart/");
-// ... adicione outras funções conforme necessário (addToCart, removeFromCart, etc.)
+// Funções do Carrinho
+export const createCart = () => apiFetch("/cart/", { method: "POST" });
+export const getCartInfo = (cartId: number) => apiFetch(`/cart/${cartId}`);
+export const addItemToCart = (
+  cartId: number,
+  item: { produto_id: number; quantidade: number }
+) =>
+  apiFetch(`/cart/${cartId}/items`, {
+    method: "POST",
+    body: JSON.stringify(item),
+  });
+export const removeItemFromCart = (cartId: number, itemId: number) =>
+  apiFetch(`/cart/${cartId}/items/${itemId}`, { method: "DELETE" });
+export const getCartTotal = (cartId: number) =>
+  apiFetch(`/cart/${cartId}/total`);
