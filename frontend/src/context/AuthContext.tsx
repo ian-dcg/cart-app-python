@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isAuth: boolean;
+  loading: boolean; // Propriedade adicionada
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,7 +25,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-      // Ao carregar o app, verifica se já existe um token no localStorage
       const storedToken = localStorage.getItem("authToken");
       if (storedToken) {
         setToken(storedToken);
@@ -44,14 +44,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setToken(null);
     localStorage.removeItem("authToken");
+    localStorage.removeItem("cartId"); // Limpa o ID do carrinho ao deslogar
   };
 
-  if (loading) {
-    return null; // ou um componente de Spinner/Loading
-  }
-
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuth: !!token }}>
+    <AuthContext.Provider
+      value={{ token, login, logout, isAuth: !!token, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
