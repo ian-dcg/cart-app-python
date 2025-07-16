@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 
 const NavLink = ({
   href,
@@ -13,14 +14,16 @@ const NavLink = ({
   children: React.ReactNode;
 }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive =
+    pathname === href ||
+    (href.startsWith("/products") && pathname.startsWith("/products"));
 
   return (
     <Link
       href={href}
       className={`block px-4 py-2 rounded-lg ${
         isActive
-          ? "bg-blue-100 text-blue-600"
+          ? "bg-blue-100 text-blue-600 font-semibold"
           : "text-gray-700 hover:bg-gray-100"
       }`}
     >
@@ -31,10 +34,12 @@ const NavLink = ({
 
 export default function Sidebar() {
   const { logout } = useAuth();
+  const { clearCart } = useCart();
   const router = useRouter();
 
   const handleLogout = () => {
     logout();
+    clearCart();
     router.push("/login");
   };
 
@@ -43,7 +48,7 @@ export default function Sidebar() {
       <h1 className="text-2xl font-bold text-gray-800 mb-10">Cart App</h1>
       <nav className="flex-1 space-y-2">
         <NavLink href="/products">Shopping List</NavLink>
-        <NavLink href="/products/register">Item Registration</NavLink>
+        <NavLink href="/cart">Shopping Cart</NavLink>
       </nav>
       <div>
         <button
