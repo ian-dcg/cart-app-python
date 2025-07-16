@@ -10,18 +10,22 @@ export default function ProtectedRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuth } = useAuth();
+  const { isAuth, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // A lógica no AuthProvider garante que este useEffect só rode
-    // após a verificação inicial do token no localStorage.
-    if (!isAuth) {
+    if (!loading && !isAuth) {
       router.push("/login");
     }
-  }, [isAuth, router]);
+  }, [isAuth, loading, router]);
 
-  // Se estiver autenticado, renderiza o conteúdo da rota.
-  // Caso contrário, mostra uma mensagem enquanto o redirecionamento acontece.
-  return isAuth ? <>{children}</> : <p className="p-10">Redirecionando...</p>;
+  if (loading) {
+    return <p className="p-10">Carregando...</p>;
+  }
+
+  if (!isAuth) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
