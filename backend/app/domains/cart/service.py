@@ -1,6 +1,7 @@
 import asyncpg
 
-from app.domains.cart.model import CartItemCreate, CartItemOut, CartOut
+from app.domains.cart.model import (CartItemCreate, CartItemOut,
+                                    CartItemUpdate, CartOut)
 from app.settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 
@@ -19,12 +20,25 @@ async def create_cart() -> int:
 
 async def add_item_to_cart(carrinho_id: int, item: CartItemCreate) -> CartItemOut:
     conn = await get_connection()
-    row = await conn.fetchrow(
-        "INSERT INTO itens_carrinho (carrinho_id, produto_id, quantidade) VALUES ($1, $2, $3) RETURNING id, produto_id, quantidade",
+    existing_item = await conn.fetchrow(
+        "SELECT id, quantidade FROM itens_carrinho WHERE carrinho_id = $1 AND produto_id = $2",
         carrinho_id,
         item.produto_id,
-        item.quantidade,
     )
+    if existing_item:
+        new_quantity = existing_item["quantidade"] + item.quantidade
+        row = await conn.fetchrow(
+            "UPDATE itens_carrinho SET quantidade = $1 WHERE id = $2 RETURNING id, produto_id, quantidade",
+            new_quantity,
+            existing_item["id"],
+        )
+    else:
+        row = await conn.fetchrow(
+            "INSERT INTO itens_carrinho (carrinho_id, produto_id, quantidade) VALUES ($1, $2, $3) RETURNING id, produto_id, quantidade",
+            carrinho_id,
+            item.produto_id,
+            item.quantidade,
+        )
     await conn.close()
     return CartItemOut(**row)
 
@@ -38,6 +52,55 @@ async def remove_item_from_cart(carrinho_id: int, item_id: int) -> bool:
     )
     await conn.close()
     return result.startswith("DELETE 1")
+
+
+async def update_cart_item_quantity(
+    carrinho_id: int, item_id: int, item_update: CartItemUpdate
+) -> CartItemOut:
+    conn = await get_connection()
+    row = await conn.fetchrow(
+        "UPDATE itens_carrinho SET quantidade = $1 WHERE id = $2 AND carrinho_id = $3 RETURNING id, produto_id, quantidade",
+        item_update.quantidade,
+        item_id,
+        carrinho_id,
+    )
+    await conn.close()
+    if not row:
+        raise KeyError("Item do carrinho não encontrado")
+    return CartItemOut(**row)
+
+
+async def checkout(cart_id: int):
+    conn = await get_connection()
+    async with conn.transaction():
+        items = await conn.fetch(
+            "SELECT produto_id, quantidade FROM itens_carrinho WHERE carrinho_id = $1",
+            cart_id,
+        )
+        if not items:
+            raise ValueError("Carrinho está vazio")
+
+        for item in items:
+            product = await conn.fetchrow(
+                "SELECT quantity FROM produtos WHERE id = $1 FOR UPDATE",
+                item["produto_id"],
+            )
+            if not product or product["quantity"] < item["quantidade"]:
+                raise ValueError(
+                    f"Estoque insuficiente para o produto ID {item['produto_id']}"
+                )
+
+            new_quantity = product["quantity"] - item["quantidade"]
+            await conn.execute(
+                "UPDATE produtos SET quantity = $1 WHERE id = $2",
+                new_quantity,
+                item["produto_id"],
+            )
+
+        await conn.execute("DELETE FROM itens_carrinho WHERE carrinho_id = $1", cart_id)
+
+    await conn.close()
+    return {"message": "Compra finalizada com sucesso!"}
 
 
 async def get_cart(carrinho_id: int) -> CartOut:
@@ -54,22 +117,6 @@ async def get_cart(carrinho_id: int) -> CartOut:
     await conn.close()
     items = [CartItemOut(**r) for r in rows]
     return CartOut(id=carrinho_id, items=items)
-
-
-async def list_all_carts() -> list[CartOut]:
-    conn = await get_connection()
-    cart_rows = await conn.fetch("SELECT id FROM carrinhos")
-    all_carts = []
-    for row in cart_rows:
-        cart_id = row["id"]
-        item_rows = await conn.fetch(
-            "SELECT id, produto_id, quantidade FROM itens_carrinho WHERE carrinho_id = $1",
-            cart_id,
-        )
-        items = [CartItemOut(**item) for item in item_rows]
-        all_carts.append(CartOut(id=cart_id, items=items))
-    await conn.close()
-    return all_carts
 
 
 async def delete_cart(cart_id: int) -> bool:

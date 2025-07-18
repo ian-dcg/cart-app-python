@@ -12,6 +12,10 @@ class CartItemCreate(BaseModel):
     quantidade: int = Field(..., gt=0, description="Quantidade deve ser maior que 0")
 
 
+class CartItemUpdate(BaseModel):
+    quantidade: int = Field(..., gt=0, description="Quantidade deve ser maior que 0")
+
+
 class CartItemOut(BaseModel):
     id: int
     produto_id: int

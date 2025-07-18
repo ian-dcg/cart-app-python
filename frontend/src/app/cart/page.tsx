@@ -1,104 +1,27 @@
-// src/app/cart/page.tsx
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import { useCart } from "@/context/CartContext";
-import { getCartInfo, getProductById, getCartTotal } from "@/lib/api";
-import {
-  FaShoppingCart,
-  FaUserCircle,
-  FaRegCreditCard,
-  FaRegUser,
-  FaHeadphones,
-} from "react-icons/fa";
-
-interface CartItem {
-  id: number;
-  produto_id: number;
-  quantidade: number;
-}
-
-interface ProductDetails {
-  id: number;
-  name: string;
-  price: number;
-}
-
-interface EnrichedCartItem {
-  item: CartItem;
-  product: ProductDetails;
-}
+import { FaShoppingCart, FaUserCircle, FaPlus, FaMinus } from "react-icons/fa";
 
 export default function ShoppingCartPage() {
-  const { cartId, items, setItems, removeItem } = useCart();
-  const [enrichedItems, setEnrichedItems] = useState<EnrichedCartItem[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const {
+    enrichedItems,
+    total,
+    loading,
+    removeItem,
+    updateQuantity,
+    checkout,
+  } = useCart();
 
-  const fetchCartDetails = useCallback(async () => {
-    if (cartId) {
-      try {
-        setLoading(true);
-        const cartData = await getCartInfo(cartId);
-        setItems(cartData.items); // Sincroniza o contexto com os dados do backend
-      } catch (error) {
-        console.error("Failed to fetch cart details:", error);
-        setItems([]); // Limpa os itens em caso de erro
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setItems([]);
-      setLoading(false);
+  const handleQuantityChange = (
+    itemId: number,
+    currentQuantity: number,
+    delta: number
+  ) => {
+    const newQuantity = currentQuantity + delta;
+    if (newQuantity > 0) {
+      updateQuantity(itemId, newQuantity);
     }
-  }, [cartId, setItems]);
-
-  useEffect(() => {
-    fetchCartDetails();
-  }, [fetchCartDetails]);
-
-  useEffect(() => {
-    const enrichAndCalculateTotal = async () => {
-      if (items.length > 0) {
-        const itemsWithDetails = await Promise.all(
-          items.map(async (item: CartItem) => {
-            const product = await getProductById(item.produto_id);
-            return { item, product };
-          })
-        );
-        setEnrichedItems(itemsWithDetails);
-
-        const newTotal = itemsWithDetails.reduce((acc, { item, product }) => {
-          return acc + product.price * item.quantidade;
-        }, 0);
-        setTotal(newTotal);
-      } else {
-        setEnrichedItems([]);
-        setTotal(0);
-      }
-    };
-    enrichAndCalculateTotal();
-  }, [items]);
-
-  const handleRemoveItem = async (itemId: number) => {
-    try {
-      // A função removeItem no contexto agora gerencia a chamada da API e a atualização do estado 'items'.
-      // A UI irá reagir automaticamente à mudança no estado 'items' através do useEffect acima.
-      await removeItem(itemId);
-    } catch (error) {
-      // O alerta de erro já é tratado no contexto, mas podemos adicionar feedback adicional aqui se necessário.
-      console.error("Could not remove item from page.", error);
-    }
-  };
-
-  const getIcon = (name: string) => {
-    if (name.toLowerCase().includes("notebook"))
-      return <FaRegCreditCard className="text-gray-500" size={24} />;
-    if (name.toLowerCase().includes("smartphone"))
-      return <FaRegUser className="text-gray-500" size={24} />;
-    if (name.toLowerCase().includes("headphones"))
-      return <FaHeadphones className="text-gray-500" size={24} />;
-    return <FaShoppingCart className="text-gray-500" size={24} />;
   };
 
   if (loading) {
@@ -135,7 +58,7 @@ export default function ShoppingCartPage() {
             <div key={item.id} className="grid grid-cols-6 gap-4 items-center">
               <div className="col-span-3 flex items-center gap-4">
                 <div className="bg-gray-100 p-3 rounded-lg">
-                  {getIcon(product.name)}
+                  <FaShoppingCart className="text-gray-500" size={24} />
                 </div>
                 <span className="font-semibold text-gray-800">
                   {product.name}
@@ -145,13 +68,29 @@ export default function ShoppingCartPage() {
                 ${product.price.toFixed(2)}
               </div>
               <div className="col-span-1 text-center">
-                <div className="w-16 p-2 inline-block text-center bg-gray-100 rounded-md text-gray-600">
-                  {item.quantidade}
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantidade, -1)
+                    }
+                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                  >
+                    <FaMinus size={12} />
+                  </button>
+                  <span className="w-10 text-center">{item.quantidade}</span>
+                  <button
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantidade, 1)
+                    }
+                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                  >
+                    <FaPlus size={12} />
+                  </button>
                 </div>
               </div>
               <div className="col-span-1 text-right">
                 <button
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => removeItem(item.id)}
                   className="text-blue-600 hover:underline text-sm"
                 >
                   Remove
@@ -169,7 +108,11 @@ export default function ShoppingCartPage() {
             ${total.toFixed(2)}
           </span>
         </div>
-        <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+        <button
+          onClick={checkout}
+          disabled={enrichedItems.length === 0}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
           Proceed to Checkout
         </button>
       </div>

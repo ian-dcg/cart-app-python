@@ -1,4 +1,4 @@
-// src/lib/api.ts
+// frontend/src/lib/api.ts
 
 // Função auxiliar para fazer requisições à API
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
@@ -78,3 +78,15 @@ export const removeItemFromCart = (cartId: number, itemId: number) =>
   apiFetch(`/cart/${cartId}/items/${itemId}`, { method: "DELETE" });
 export const getCartTotal = (cartId: number) =>
   apiFetch(`/cart/${cartId}/total`);
+
+export const updateItemQuantity = (
+  cartId: number,
+  itemId: number,
+  quantity: number
+) =>
+  apiFetch(`/cart/${cartId}/items/${itemId}`, {
+    method: "PUT",
+    body: JSON.stringify({ quantidade: quantity }),
+  });
+export const checkoutCart = (cartId: number) =>
+  apiFetch(`/cart/${cartId}/checkout`, { method: "POST" });

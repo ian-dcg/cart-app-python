@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 
-from app.domains.cart.model import (CartCreate, CartItemCreate, CartItemOut,
-                                    CartOut)
-from app.domains.cart.service import (add_item_to_cart, create_cart,
-                                      delete_cart, get_cart, list_all_carts,
-                                      remove_item_from_cart)
+from app.domains.cart.model import (CartItemCreate, CartItemOut,
+                                    CartItemUpdate, CartOut)
+from app.domains.cart.service import (add_item_to_cart, checkout, create_cart,
+                                      delete_cart, get_cart,
+                                      remove_item_from_cart,
+                                      update_cart_item_quantity)
 
 router = APIRouter(prefix="/cart", tags=["Carrinho"])
 
@@ -30,17 +31,34 @@ async def remove_item(cart_id: int, item_id: int):
     return
 
 
+@router.put("/{cart_id}/items/{item_id}", response_model=CartItemOut)
+async def update_item_quantity(cart_id: int, item_id: int, item: CartItemUpdate):
+    try:
+        return await update_cart_item_quantity(cart_id, item_id, item)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Item do carrinho não encontrado")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{cart_id}/checkout")
+async def process_checkout(cart_id: int):
+    try:
+        return await checkout(cart_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Ocorreu um erro ao processar a compra"
+        )
+
+
 @router.get("/{cart_id}", response_model=CartOut)
 async def get_cart_info(cart_id: int):
     try:
         return await get_cart(cart_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Carrinho não encontrado")
-
-
-@router.get("/", response_model=list[CartOut])
-async def get_all_carts():
-    return await list_all_carts()
 
 
 @router.delete("/{cart_id}", status_code=204)

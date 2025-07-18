@@ -23,6 +23,7 @@ app.add_middleware(
     allow_headers=["*"],  # Permite todos os cabeçalhos
 )
 
+
 @app.get("/")
 def hello_world():
     return {"message": "Hello World!"}
