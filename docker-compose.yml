@@ -50,6 +50,21 @@ services:
       - DB_PASSWORD=admin
       - PYTHONPATH=/app
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cartapp_frontend
+    restart: always
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+
   lint:
     build:
       # O contexto do build também é a pasta backend
