@@ -84,12 +84,6 @@ export default function ProductsPage() {
               <div className="text-gray-600">{product.quantity}</div>
               <div className="text-gray-600">{product.setor}</div>
               <div className="space-x-2">
-                <button
-                  onClick={() => addToCart(product.id, 1)}
-                  className="text-green-600 hover:underline"
-                >
-                  Add to Cart
-                </button>
                 <Link
                   href={`/products/edit/${product.id}`}
                   className="text-blue-600 hover:underline"
@@ -101,6 +95,12 @@ export default function ProductsPage() {
                   className="text-red-600 hover:underline"
                 >
                   Delete
+                </button>
+                <button
+                  onClick={() => addToCart(product.id, 1)}
+                  className="text-green-600 hover:underline"
+                >
+                  Add to Cart
                 </button>
               </div>
             </div>
