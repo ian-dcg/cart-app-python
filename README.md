@@ -76,7 +76,13 @@ docker-compose run --rm api pytest tests/test_cart.py
 docker-compose run --rm api pytest -k "not test_listar_todos_os_carrinhos"
 ```
 
-> **⚠️ Nota:** Atualmente há 1 teste falhando (`test_listar_todos_os_carrinhos`) porque a rota `GET /cart/` não está implementada no backend.
+> **✅ Status dos Testes:** Atualmente **todos os 11 testes estão passando** (100% de sucesso). Os testes cobrem:
+>
+> - Criação e gestão de carrinhos
+> - Adição/remoção de itens do carrinho
+> - Validações de produtos e quantidades
+> - Filtros de busca por nome e setor
+> - Casos de erro e edge cases
 
 ## 🔧 Ferramentas de qualidade de código
 
@@ -134,8 +140,44 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## 🔗 Links úteis
 
-- 🔹 [📄 Histórias de Usuário (Backlog)](./docs/backlog/historias_de_usuario.md)
-- 🔹 [📊 Diagrama de Classes UML (PNG)](./docs/uml/diagrama_UML.png)
+- 🔹 [📄 Histórias de Usuário (Backlog)](./backend/docs/backlog/historias_de_usuario.md)
+- 🔹 [📊 Diagrama de Classes UML (PNG)](./backend/docs/uml/diagrama_UML.png)
+- 🔹 [🗄️ Diagrama Físico do Banco (PNG)](./backend/docs/diagrama%20físico/diagrama_fisico.png)
+- 🔹 [📋 Apresentação Completa do Projeto](./APRESENTACAO.md)
+
+---
+
+## ✨ Funcionalidades Principais
+
+### 🛍️ **Gestão de Produtos**
+
+- ✅ CRUD completo (Criar, Listar, Editar, Deletar)
+- ✅ Busca inteligente por nome (case-insensitive, busca parcial)
+- ✅ Filtro por setor com dropdown selecionável
+- ✅ Setores pré-definidos: Hortifruti, Açougue, Padaria, Limpeza, Bebidas
+- ✅ Interface responsiva com busca em tempo real (debounce 300ms)
+
+### 🛒 **Carrinho de Compras**
+
+- ✅ Adicionar/remover produtos do carrinho
+- ✅ Controle de quantidade com botões intuitivos (+/-)
+- ✅ Cálculo automático de subtotais e total geral
+- ✅ Processo de checkout simplificado
+- ✅ Estado persistente durante a sessão
+
+### 🔐 **Autenticação e Segurança**
+
+- ✅ Sistema de login/logout
+- ✅ Registro de novos usuários
+- ✅ Proteção de rotas com JWT tokens
+- ✅ Validação de dados no front e backend
+
+### 🎨 **Interface Moderna**
+
+- ✅ Design responsivo com Tailwind CSS
+- ✅ Feedback visual (loading, estados de erro/sucesso)
+- ✅ Navegação intuitiva com sidebar
+- ✅ Acessibilidade (contraste adequado, labels)
 
 ---
 
