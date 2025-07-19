@@ -17,20 +17,44 @@ interface Product {
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchName, setSearchName] = useState("");
+  const [searchSetor, setSearchSetor] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
   const { addToCart } = useCart();
 
+  // Debounce para evitar muitas requisições durante a digitação
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 300);
 
+    return () => clearTimeout(timer);
+  }, [searchName, searchSetor]);
+
+  const fetchProducts = async () => {
+    setSearchLoading(true);
+    try {
+      // Constrói parâmetros de busca
+      const params = new URLSearchParams();
+      if (searchName.trim()) {
+        params.append('nome', searchName.trim());
+      }
+      if (searchSetor.trim()) {
+        params.append('setor', searchSetor.trim());
+      }
+      
+      const data = await getProducts(params.toString());
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+      setSearchLoading(false);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -60,6 +84,52 @@ export default function ProductsPage() {
         </Link>
       </div>
 
+      {/* Search Filters */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <h2 className="text-lg font-semibold text-gray-700 mb-3">Search Products</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="searchName" className="block text-sm font-medium text-gray-600 mb-1">
+              Search by Name
+            </label>
+            <input
+              id="searchName"
+              type="text"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              placeholder="Enter product name..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label htmlFor="searchSetor" className="block text-sm font-medium text-gray-600 mb-1">
+              Search by Sector
+            </label>
+            <input
+              id="searchSetor"
+              type="text"
+              value={searchSetor}
+              onChange={(e) => setSearchSetor(e.target.value)}
+              placeholder="Enter sector..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        {(searchName || searchSetor) && (
+          <div className="mt-3">
+            <button
+              onClick={() => {
+                setSearchName("");
+                setSearchSetor("");
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 underline"
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="space-y-4">
         <div className="grid grid-cols-6 gap-4 px-4 text-left text-sm font-medium text-gray-500">
           <div className="col-span-2">Name</div>
@@ -71,6 +141,12 @@ export default function ProductsPage() {
 
         {loading ? (
           <p>Carregando produtos...</p>
+        ) : searchLoading ? (
+          <p>Buscando...</p>
+        ) : products.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {searchName || searchSetor ? "Nenhum produto encontrado com os filtros aplicados." : "Nenhum produto cadastrado."}
+          </div>
         ) : (
           products.map((product) => (
             <div
