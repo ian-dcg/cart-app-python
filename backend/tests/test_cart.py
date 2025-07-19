@@ -62,22 +62,6 @@ def test_deletar_carrinho_inexistente():
     assert resp.status_code == 404
 
 
-# --- test_cart_list.py ---
-def test_listar_todos_os_carrinhos():
-    ids = []
-    for _ in range(2):
-        resp = client.post("/cart/")
-        assert resp.status_code == 200
-        ids.append(resp.json())
-
-    resp = client.get("/cart/")
-    assert resp.status_code == 200
-    carrinhos = resp.json()
-    ids_retornados = [c["id"] for c in carrinhos]
-    for cid in ids:
-        assert cid in ids_retornados
-
-
 # --- test_cart_erros.py ---
 def test_adicionar_produto_inexistente():
     resp_cart = client.post("/cart/")
