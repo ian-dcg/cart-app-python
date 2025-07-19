@@ -113,14 +113,19 @@ export default function ProductsPage() {
             >
               Search by Sector
             </label>
-            <input
+            <select
               id="searchSetor"
-              type="text"
               value={searchSetor}
               onChange={(e) => setSearchSetor(e.target.value)}
-              placeholder="Enter sector..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
-            />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+            >
+              <option value="">All sectors</option>
+              <option value="Hortifruti">Hortifruti</option>
+              <option value="Açougue">Açougue</option>
+              <option value="Padaria">Padaria</option>
+              <option value="Limpeza">Limpeza</option>
+              <option value="Bebidas">Bebidas</option>
+            </select>
           </div>
         </div>
         {(searchName || searchSetor) && (

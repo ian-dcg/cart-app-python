@@ -77,7 +77,9 @@ export default function ShoppingCartPage() {
                   >
                     <FaMinus size={12} />
                   </button>
-                  <span className="w-10 text-center text-gray-900 font-medium">{item.quantidade}</span>
+                  <span className="w-10 text-center text-gray-900 font-medium">
+                    {item.quantidade}
+                  </span>
                   <button
                     onClick={() =>
                       handleQuantityChange(item.id, item.quantidade, 1)
