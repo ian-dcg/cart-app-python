@@ -24,11 +24,14 @@ Aplicativo de gerenciamento de listas de compras, originalmente desenvolvido em 
 git clone https://github.com/ian-dcg/cart-app-python.git
 cd cart-app-python
 
-# 2. Copie o arquivo de variáveis de ambiente
-cp .env.example .env
+# 2. Configure as variáveis de ambiente
+# Backend (opcional, já configurado no docker-compose)
+cp backend/.env.example backend/.env
 
-# 3. Suba os serviços: banco, pgAdmin e backend
-cd docker
+# Frontend (necessário para comunicação com a API)
+cp frontend/.env.local.example frontend/.env.local
+
+# 3. Suba todos os serviços
 docker-compose up -d --build
 ```
 
@@ -36,10 +39,10 @@ docker-compose up -d --build
 
 ### 🔗 Endpoints disponíveis
 
-- API base: http://localhost:8000
-- Teste de conexão com banco: http://localhost:8000/db-test
-- Documentação Swagger: http://localhost:8000/docs
-- pgAdmin: http://localhost:5050
+- **Frontend**: http://localhost:3000
+- **API base**: http://localhost:8000
+- **Documentação Swagger**: http://localhost:8000/docs
+- **pgAdmin**: http://localhost:5050
 
 ---
 
@@ -57,20 +60,51 @@ docker-compose up -d --build
 Para rodar os testes via Docker:
 
 ```bash
+# Executar todos os testes
 docker-compose run --rm api pytest
+
+# Executar testes com mais detalhes (verbose)
+docker-compose run --rm api pytest -v
+
+# Executar apenas testes de produto
+docker-compose run --rm api pytest tests/test_product.py
+
+# Executar apenas testes de carrinho
+docker-compose run --rm api pytest tests/test_cart.py
+
+# Executar testes excluindo falhas conhecidas
+docker-compose run --rm api pytest -k "not test_listar_todos_os_carrinhos"
 ```
 
-## 🛠️ Variáveis de ambiente (.env)
+> **⚠️ Nota:** Atualmente há 1 teste falhando (`test_listar_todos_os_carrinhos`) porque a rota `GET /cart/` não está implementada no backend.
 
-Este projeto utiliza um arquivo `.env` para configurar a conexão com o banco de dados.
+## 🔧 Ferramentas de qualidade de código
+
+Para executar linting e formatação:
+
+```bash
+# Executar linting (flake8, black, isort)
+docker-compose run --rm lint
+
+# Ou individual:
+docker-compose run --rm api flake8 app tests
+docker-compose run --rm api black app tests
+docker-compose run --rm api isort app tests
+```
+
+## 🛠️ Variáveis de ambiente
+
+Este projeto utiliza arquivos de configuração para diferentes serviços:
+
+### Backend (.env)
 
 Para facilitar, você pode criar o `.env` a partir do arquivo de exemplo:
 
 ```bash
-cp .env.example .env
+cp backend/.env.example backend/.env
 ```
 
-### 📄 Conteúdo esperado do `.env`:
+**Conteúdo esperado do `backend/.env`:**
 
 ```
 DB_HOST=db
@@ -80,9 +114,21 @@ DB_USER=admin
 DB_PASSWORD=admin
 ```
 
-Essas variáveis são usadas pelo backend FastAPI para se conectar ao banco de dados PostgreSQL dentro do Docker.
+### Frontend (.env.local)
 
-⚠️ O `.env` está listado no `.gitignore` e **não deve ser versionado**.
+O frontend precisa saber onde encontrar a API:
+
+```bash
+cp frontend/.env.local.example frontend/.env.local
+```
+
+**Conteúdo esperado do `frontend/.env.local`:**
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+⚠️ Ambos os arquivos `.env` estão listados no `.gitignore` e **não devem ser versionados**.
 
 ---
 
