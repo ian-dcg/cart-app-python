@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "@/lib/api";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { FaEdit, FaTrash, FaCartPlus } from "react-icons/fa";
 
 interface Product {
   id: number;
@@ -174,24 +175,24 @@ export default function ProductsPage() {
               <div className="text-gray-600">${product.price.toFixed(2)}</div>
               <div className="text-gray-600">{product.quantity}</div>
               <div className="text-gray-600">{product.setor}</div>
-              <div className="space-x-2">
+              <div className="space-x-2 flex items-center">
                 <Link
                   href={`/products/edit/${product.id}`}
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 hover:text-blue-800"
                 >
-                  Edit
+                  <FaEdit />
                 </Link>
                 <button
                   onClick={() => handleDelete(product.id)}
-                  className="text-red-600 hover:underline"
+                  className="text-red-600 hover:text-red-800"
                 >
-                  Delete
+                  <FaTrash />
                 </button>
                 <button
                   onClick={() => addToCart(product.id, 1)}
-                  className="text-green-600 hover:underline"
+                  className="text-green-600 hover:text-green-800"
                 >
-                  Add to Cart
+                  <FaCartPlus />
                 </button>
               </div>
             </div>
