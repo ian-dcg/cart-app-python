@@ -24,3 +24,16 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Esconde indicadores de desenvolvimento para apresentação */
+#__next-build-watcher,
+.__next-dev-overlay,
+.__nextjs-toast-errors-parent,
+[data-nextjs-toast-wrapper],
+.__next-dev-overlay-backdrop,
+.__next-dev-overlay-content {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

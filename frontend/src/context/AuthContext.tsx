@@ -22,8 +22,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     try {
       const storedToken = localStorage.getItem("authToken");
       if (storedToken) {
@@ -34,18 +41,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mounted]);
 
   const login = (newToken: string) => {
     setToken(newToken);
-    localStorage.setItem("authToken", newToken);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("authToken", newToken);
+    }
   };
 
   const logout = () => {
     setToken(null);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("cartId"); // Limpa o ID do carrinho ao deslogar
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("cartId"); // Limpa o ID do carrinho ao deslogar
+    }
   };
+
+  // Previne hydration mismatch mostrando um loading durante a hidratação
+  if (!mounted) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider

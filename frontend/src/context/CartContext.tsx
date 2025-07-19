@@ -55,7 +55,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [enrichedItems, setEnrichedItems] = useState<EnrichedCartItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const { isAuth, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loadCart = useCallback(async (currentCartId: number) => {
     try {
@@ -83,8 +88,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!authLoading && isAuth) {
+    if (!mounted || authLoading) return;
+
+    if (isAuth) {
       const initializeCart = async () => {
+        if (typeof window === "undefined") return;
+
         let storedCartId = localStorage.getItem("cartId");
         let currentCartId = storedCartId ? Number(storedCartId) : null;
 
@@ -98,16 +107,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           }
         }
         setCartId(currentCartId);
-        // CORREÇÃO: Adiciona uma verificação para garantir que currentCartId não é nulo
+
+        // Carrega o carrinho se currentCartId existe
         if (currentCartId) {
           await loadCart(currentCartId);
         }
       };
       initializeCart();
-    } else if (!authLoading && !isAuth) {
+    } else {
       setLoading(false);
     }
-  }, [isAuth, authLoading, loadCart]);
+  }, [mounted, isAuth, authLoading, loadCart]);
 
   const addToCart = async (productId: number, quantity: number) => {
     if (!cartId) return;
@@ -162,8 +172,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCartId(null);
     setEnrichedItems([]);
     setTotal(0);
-    localStorage.removeItem("cartId");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cartId");
+    }
   };
+
+  // Previne hydration mismatch
+  if (!mounted) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <CartContext.Provider
