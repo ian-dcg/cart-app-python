@@ -44,7 +44,7 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 }
 
 // Funções de Produtos
-export const getProducts = (queryParams?: string) => 
+export const getProducts = (queryParams?: string) =>
   apiFetch(`/products/${queryParams ? `?${queryParams}` : ""}`);
 export const createProduct = (data: any) =>
   apiFetch("/products/", { method: "POST", body: JSON.stringify(data) });

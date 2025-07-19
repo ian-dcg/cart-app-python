@@ -73,16 +73,16 @@ export default function ShoppingCartPage() {
                     onClick={() =>
                       handleQuantityChange(item.id, item.quantidade, -1)
                     }
-                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700"
                   >
                     <FaMinus size={12} />
                   </button>
-                  <span className="w-10 text-center">{item.quantidade}</span>
+                  <span className="w-10 text-center text-gray-900 font-medium">{item.quantidade}</span>
                   <button
                     onClick={() =>
                       handleQuantityChange(item.id, item.quantidade, 1)
                     }
-                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                    className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700"
                   >
                     <FaPlus size={12} />
                   </button>
